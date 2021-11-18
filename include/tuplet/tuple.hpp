@@ -1,6 +1,13 @@
 #ifndef TUPLET_TUPLET_HPP_IMPLEMENTATION
 #define TUPLET_TUPLET_HPP_IMPLEMENTATION
 
+#if defined(__GNUC__) && (__GNUC__ < 10) && !defined(__clang__)
+#include <tuple>
+
+namespace tuplet {
+using namespace std;
+}
+#else
 #if __has_include(<compare>)
 #include <compare>
 #endif
@@ -450,4 +457,6 @@ struct tuple_element<I, tuplet::pair<A, B>> {
     using type = std::conditional_t<I == 0, A, B>;
 };
 } // namespace std
+
+#endif
 #endif
