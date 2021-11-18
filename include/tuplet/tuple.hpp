@@ -122,8 +122,22 @@ struct tuple_elem {
         return value == other.value;
     }
 };
+
+#if __cpp_lib_unwrap_ref >= 201811L
 template <class T>
 using unwrap_ref_decay_t = typename std::unwrap_ref_decay<T>::type;
+#else
+template<typename T>
+struct unwrap_reference { using type = T; };
+template<typename T>
+struct unwrap_reference<std::reference_wrapper<T>> { using type = T&; };
+template<typename T>
+using unwrap_reference_t = typename unwrap_reference<T>::type;
+template<typename T>
+struct unwrap_ref_decay { using type = unwrap_reference_t<std::decay_t<T>>; };
+template<typename T>
+using unwrap_ref_decay_t = typename unwrap_ref_decay<T>::type;
+#endif
 } // namespace tuplet
 
 // tuplet::detail::get_tuple_base implementation
