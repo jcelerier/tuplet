@@ -1,7 +1,9 @@
 #ifndef TUPLET_TUPLET_HPP_IMPLEMENTATION
 #define TUPLET_TUPLET_HPP_IMPLEMENTATION
 
+#if __has_include(<compare>)
 #include <compare>
+#endif
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -57,6 +59,7 @@ template <class T>
 concept ordered = requires(T const& t) {
     {t <=> t};
 };
+
 template <class T>
 concept equality_comparable = requires(T const& t) {
     { t == t } -> same_as<bool>;
@@ -84,7 +87,10 @@ struct type_map : Bases... {
     using base_list = type_list<Bases...>;
     using Bases::operator[]...;
     using Bases::decl_elem...;
+
+#if __has_include(<compare>)
     auto operator<=>(type_map const&) const = default;
+#endif
     bool operator==(type_map const&) const = default;
 };
 
@@ -101,7 +107,9 @@ struct tuple_elem {
     constexpr decltype(auto) operator[](tag<I>) && {
         return (std::move(*this).value);
     }
+#if __has_include(<compare>)
     auto operator<=>(tuple_elem const&) const = default;
+#endif
     bool operator==(tuple_elem const&) const = default;
     // Implements comparison for tuples containing reference types
     constexpr auto operator<=>(tuple_elem const& other) const noexcept(noexcept(
@@ -201,7 +209,9 @@ struct tuple : tuple_base_t<T...> {
         return *this;
     }
 
+#if __has_include(<compare>)
     auto operator<=>(tuple const&) const = default;
+#endif
     bool operator==(tuple const&) const = default;
 
    private:
@@ -230,7 +240,10 @@ struct tuple<> : tuple_base_t<> {
     constexpr auto& operator=(U&&) noexcept { return *this; }
 
     constexpr auto& assign() noexcept { return *this; }
+
+#if __has_include(<compare>)
     auto operator<=>(tuple const&) const = default;
+#endif
     bool operator==(tuple const&) const = default;
 };
 template <class... Ts>
@@ -270,7 +283,10 @@ struct pair {
         second = static_cast<S2&&>(s);
         return *this;
     }
+
+#if __has_include(<compare>)
     auto operator<=>(pair const&) const = default;
+#endif
     bool operator==(pair const&) const = default;
 };
 template <class A, class B>
